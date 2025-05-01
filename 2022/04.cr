@@ -1,6 +1,5 @@
 require "spec"
 
-
 class Assignments
   @input : String
 

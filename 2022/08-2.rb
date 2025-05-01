@@ -176,7 +176,7 @@ class TreehouseFinder
   def visible_trees
     @heights.each_with_index.count do |height, row, col|
       visible_left = visible_from_left?(height, row, col)
-      puts "row: #{row}, col: #{col}, height: #{height}, visible_left: #{visible_left}"
+      # puts "row: #{row}, col: #{col}, height: #{height}, visible_left: #{visible_left}"
 
       visible_from_left?(height, row, col) ||
         visible_from_right?(height, row, col) ||
@@ -185,14 +185,35 @@ class TreehouseFinder
     end
   end
 
-  def trees_visible_from_left(height, row, col)
+  def index_visible_from_top(height, row, col)
+    if row.zero?
+      -1
+    else
+      top_index = (row - 1).downto(0)
+        .find { |row_index| @heights[row_index, col] >= height || row_index.zero? }
+
+      row - top_index
+    end
+  end
+
+  def trees_visible_from_top(height, row, col)
     if row.zero?
       0
     else
-      left_index = (row - 1).downto(0)
+      top_index = (row - 1).downto(0)
         .find { |row_index| @heights[row_index, col] >= height || row_index.zero? }
 
-      row - left_index
+      row - top_index
+    end
+  end
+
+  def visible_from_top?(height, row, col)
+    if col.zero?
+      true
+    else
+      (col - 1).downto(0).all? { |col_index|
+        @heights[row, col_index] < height
+      }
     end
   end
 
@@ -206,7 +227,7 @@ class TreehouseFinder
     end
   end
 
-  def trees_visible_from_top(height, row, col)
+  def trees_visible_from_left(height, row, col)
     if col.zero?
       0
     else
@@ -248,16 +269,6 @@ class TreehouseFinder
     else
       (row + 1).upto(max_row_index).all? { |row_index|
         @heights[row_index, col] < height
-      }
-    end
-  end
-
-  def visible_from_top?(height, row, col)
-    if col.zero?
-      true
-    else
-      (col - 1).downto(0).all? { |col_index|
-        @heights[row, col_index] < height
       }
     end
   end
